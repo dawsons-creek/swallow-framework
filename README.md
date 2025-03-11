@@ -1,15 +1,17 @@
-# Swallow Framework
+<img src="assets/swallow_illustration.jpg" alt="Swallow Framework" width="740px"/>
 
-A lightweight, reactive Model-View-Command-Context (MVCC) framework for building 
-structured applications with event-driven architecture.
+# Swallow Framework 🐦
+
+*A lightweight, reactive Model-View-Command-Context (MVCC) framework for building
+structured applications with event-driven architecture.*
 
 ## Overview
 
-Swallow Framework provides a modern approach to application architecture by combining
-the best aspects of MVC with reactive state management and the command pattern. It's 
-designed to create maintainable, testable applications with clear separation of concerns.
+Swallow Framework brings the speed and agility of a laden—or perhaps unladen—swallow 
+to your Python applications. It's built around the Model-View-Command-Context pattern, 
+ensuring clean separation of concerns, observability, and reactive state management.
 
-### Key Features
+## Key Features
 
 - **Model-View-Command-Context Pattern**: A structured approach to application architecture
 - **Reactive State Management**: Observable properties with automatic change detection and notification
@@ -134,3 +136,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
