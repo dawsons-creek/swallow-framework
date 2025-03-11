@@ -1,13 +1,10 @@
 # Swallow Framework
 
-A lightweight, reactive Model-View-Command-Context (MVCC) framework for building 
-structured applications with event-driven architecture.
+A lightweight, reactive Model-View-Command-Context (MVCC) framework for building structured applications with event-driven architecture.
 
 ## Overview
 
-Swallow Framework provides a modern approach to application architecture by combining
-the best aspects of MVC with reactive state management and the command pattern. It's 
-designed to create maintainable, testable applications with clear separation of concerns.
+Swallow Framework provides a modern approach to application architecture by combining the best aspects of MVC with reactive state management and the command pattern. It's designed to create maintainable, testable applications with clear separation of concerns.
 
 ### Key Features
 
@@ -17,73 +14,7 @@ designed to create maintainable, testable applications with clear separation of 
 - **Command Pattern Implementation**: Actions encapsulated as commands for better testability
 - **Lightweight and Flexible**: Minimal dependencies and adaptable to different application types
 
-## Architecture
 
-Swallow Framework is built on four main components:
-
-### Model
-
-Models manage application state using reactive properties. Any changes to these properties 
-automatically notify registered listeners.
-
-```python
-from swallow_framework.mvcc.model import Model
-from swallow_framework.state.property import state
-
-class UserModel(Model):
-    name = state("")
-    age = state(0)
-    
-    def update_user(self, name, age):
-        self.name = name
-        self.age = age
-
-# Listen for changes
-user = UserModel()
-user.on_change('name', lambda value: print(f"Name changed to: {value}"))
-```
-
-### View
-
-Views handle user interaction and dispatch events through the context.
-
-```python
-from swallow_framework.mvcc.view import View
-from swallow_framework.core.events import Event
-
-class UserFormView(View):
-    def submit_form(self, name, age):
-        self.dispatch(Event("update_user", {"name": name, "age": age}))
-```
-
-### Command
-
-Commands encapsulate actions to be performed on models.
-
-```python
-from swallow_framework.mvcc.command import Command
-
-class UpdateUserCommand(Command):
-    def execute(self, data):
-        self.model.update_user(data["name"], data["age"])
-```
-
-### Context
-
-The context maps events to commands and facilitates event dispatching.
-
-```python
-from swallow_framework.mvcc.context import Context
-from swallow_framework.core.events import EventDispatcher
-
-class AppContext(Context):
-    def __init__(self):
-        super().__init__(EventDispatcher())
-        
-        # Map events to commands
-        user_model = UserModel()
-        self.map_command("update_user", UpdateUserCommand(user_model))
-```
 
 ## Installation
 
@@ -101,10 +32,91 @@ pip install -e .
 
 ## Getting Started
 
-1. Create your models with reactive state properties
-2. Define commands to encapsulate actions on models
-3. Create a context that maps events to commands
-4. Build views that dispatch events through the context
+Here's a complete example to help you get started with the Swallow Framework:
+
+### 1. Define your Model
+
+```python
+from swallow_framework.mvcc.model import Model
+from swallow_framework.state.property import state
+
+class UserModel(Model):
+    name = state("")
+    email = state("")
+    
+    def update_user(self, name, email):
+        self.name = name
+        self.email = email
+        
+    def reset(self):
+        self.name = ""
+        self.email = ""
+```
+
+### 2. Create Commands
+
+```python
+from swallow_framework.mvcc.command import Command
+
+class UpdateUserCommand(Command):
+    def execute(self, data):
+        self.model.update_user(data["name"], data["email"])
+
+class ResetUserCommand(Command):
+    def execute(self, data):
+        self.model.reset()
+```
+
+### 3. Set up the Context
+
+```python
+from swallow_framework.mvcc.context import Context
+from swallow_framework.core.events import EventDispatcher
+
+class AppContext(Context):
+    def __init__(self):
+        # Create event dispatcher
+        event_dispatcher = EventDispatcher()
+        super().__init__(event_dispatcher)
+        
+        # Create model
+        self.user_model = UserModel()
+        
+        # Map events to commands
+        self.map_command("update_user", UpdateUserCommand(self.user_model))
+        self.map_command("reset_user", ResetUserCommand(self.user_model))
+```
+
+### 4. Create a View
+
+```python
+from swallow_framework.mvcc.view import View
+from swallow_framework.core.events import Event
+
+class UserFormView(View):
+    def __init__(self, context):
+        super().__init__(context)
+        
+        # Listen for model changes
+        self.context.user_model.on_change('name', self.on_name_changed)
+        self.context.user_model.on_change('email', self.on_email_changed)
+    
+    def on_name_changed(self, value):
+        print(f"Name updated to: {value}")
+    
+    def on_email_changed(self, value):
+        print(f"Email updated to: {value}")
+    
+    def submit_form(self, name, email):
+        print("Form submitted, dispatching update_user event")
+        self.dispatch(Event("update_user", {"name": name, "email": email}))
+    
+    def reset_form(self):
+        print("Reset button clicked, dispatching reset_user event")
+        self.dispatch(Event("reset_user", None))
+```
+
+### 5. Putting it all together
 
 ```python
 # Create the application context
@@ -114,8 +126,25 @@ context = AppContext()
 view = UserFormView(context)
 
 # Handle user interactions
-view.submit_form("Alice", 30)
+view.submit_form("Alice", "alice@example.com")
+# Output:
+# Form submitted, dispatching update_user event
+# Name updated to: Alice
+# Email updated to: alice@example.com
+
+# Reset the form
+view.reset_form()
+# Output:
+# Reset button clicked, dispatching reset_user event
+# Name updated to: 
+# Email updated to: 
 ```
+
+This example demonstrates the core concepts of the Swallow Framework:
+- Models with reactive state properties
+- Commands that encapsulate actions
+- A context that connects events to commands
+- Views that dispatch events and react to model changes
 
 ## Examples
 
