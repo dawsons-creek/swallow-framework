@@ -8,9 +8,9 @@ version = "0.1.0"
 description = "A lightweight Python framework"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "MIT"}
+license = { text = "MIT" }
 authors = [
-    {name = "Alastair Dawson", email = "alastair.j.dawson@gmail.com"},
+    { name = "Alastair Dawson", email = "alastair.j.dawson@gmail.com" },
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -21,11 +21,6 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-]
-dependencies = [
-    "prompt_toolkit",
-    "pyperclip"
-    # Add your dependencies here
 ]
 
 [project.urls]
@@ -59,9 +54,7 @@ disallow_incomplete_defs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
+addopts = "--strict-markers"
 
 [tool.hatch.build.targets.wheel]
 packages = ["swallow_framework"]
-
-[tool.hatch.build.hooks.module]
-used-packages = ["swallow_framework"]
