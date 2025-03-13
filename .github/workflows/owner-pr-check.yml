@@ -7,31 +7,36 @@ on:
 jobs:
   check-owner:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    outputs:
+      is-owner: ${{ steps.check-owner.outputs.is_owner }}
+
     steps:
     - name: Check if PR is from owner
-      id: is-owner
+      id: check-owner
       run: |
         if [ "${{ github.event.pull_request.user.login }}" == "${{ github.repository_owner }}" ]; then
-          echo "Result=success" >> $GITHUB_OUTPUT
+          echo "is_owner=true" >> $GITHUB_OUTPUT
         else
-          echo "Result=needs-review" >> $GITHUB_OUTPUT
+          echo "is_owner=false" >> $GITHUB_OUTPUT
         fi
 
-    - name: Set status for owner
-      if: steps.is-owner.outputs.Result == 'success'
-      uses: Sibz/github-status-action@v1
-      with:
-        authToken: ${{ secrets.GITHUB_TOKEN }}
-        context: 'PR Author Review'
-        state: 'success'
-        sha: ${{ github.event.pull_request.head.sha }}
+  owner-pr:
+    needs: check-owner
+    runs-on: ubuntu-latest
+    if: needs.check-owner.outputs.is-owner == 'true'
+    steps:
+      - name: Owner PR - Auto Approve
+        run: echo "PR is from the repository owner - automatically approved"
 
-    - name: Set status for external contributor
-      if: steps.is-owner.outputs.Result == 'needs-review'
-      uses: Sibz/github-status-action@v1
-      with:
-        authToken: ${{ secrets.GITHUB_TOKEN }}
-        context: 'PR Author Review'
-        state: 'pending'
-        description: 'PR requires review from repository owner'
-        sha: ${{ github.event.pull_request.head.sha }}
+  external-pr:
+    needs: check-owner
+    runs-on: ubuntu-latest
+    if: needs.check-owner.outputs.is-owner == 'false'
+    steps:
+      - name: Wait for review
+        run: |
+          echo "PR is from an external contributor"
+          echo "Waiting for repository owner review"
+          exit 1  # Fail the check to prevent merging without review
