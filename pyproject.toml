@@ -61,7 +61,7 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/swallow_framework"]  # Specify the package source directory
+packages = ["swallow_framework"]
 
-[tool.hatch.build.targets.wheel.sources."."]
-path = "src"  # Where the sources are found
+[tool.hatch.build.hooks.module]
+used-packages = ["swallow_framework"]
