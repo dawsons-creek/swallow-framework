@@ -25,12 +25,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest pytest-cov
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        pip install -e .
+        pip install -e .  # Ensure package is installed correctly
 
     - name: Run tests with pytest
       run: |
-        pytest tests/ --cov=src/swallow_framework --cov-report=xml
+        PYTHONPATH=src pytest tests/ --cov=src/swallow_framework --cov-report=xml
+      env:
+        PYTHONPATH: src  # Set PYTHONPATH to src to avoid import issues
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
