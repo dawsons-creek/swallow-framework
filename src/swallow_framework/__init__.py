@@ -7,27 +7,11 @@ A lightweight Python framework designed for reactive state management and event-
 
 __version__ = "0.1.0"
 
-from src.swallow_framework.core import Event, EventDispatcher, validate_instance_type
-from src.swallow_framework.mvcc import Model, View, Command, Context
-from src.swallow_framework.state import Observable, ObservableValue, ObservableList
+from src.swallow_framework.core.events import Event, EventDispatcher
+from src.swallow_framework.mvcc.model import Model
+from src.swallow_framework.mvcc.view import View
+from src.swallow_framework.mvcc.command import Command
+from src.swallow_framework.mvcc.context import Context
+from src.swallow_framework.state.property import state
 
-__all__ = [
-    # Core
-    "Event",
-    "EventDispatcher",
-
-    # State
-    "Observable",
-    "ObservableValue",
-    "ObservableList",
-    "state",
-
-    # MVC
-    "Model",
-    "View",
-    "Command",
-    "Context",
-
-    # Utils
-    "validate_instance_type"
-]
+__all__ = ['Event', 'EventDispatcher', 'Model', 'View', 'Command', 'Context', 'state']

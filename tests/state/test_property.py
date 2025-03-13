@@ -8,7 +8,7 @@ from src.swallow_framework.state import state, StateProperty
 
 
 class TestStateProperty:
-    class TestModel:
+    class MockModel:  # Changed from MockModel to MockModel
         string_prop = state("initial")
         int_prop = state(42)
         list_prop = state([1, 2, 3])
@@ -26,10 +26,10 @@ class TestStateProperty:
 
     def test_get_class_access(self):
         # Access via class should return the descriptor
-        assert isinstance(self.TestModel.string_prop, StateProperty)
+        assert isinstance(self.MockModel.string_prop, StateProperty)
 
     def test_get_instance_access(self):
-        model = self.TestModel()
+        model = self.MockModel()
 
         # Access via instance should return the observable
         assert isinstance(model.string_prop, ObservableValue)
@@ -42,7 +42,7 @@ class TestStateProperty:
         assert list(model.list_prop) == [1, 2, 3]
 
     def test_set_value_property(self):
-        model = self.TestModel()
+        model = self.MockModel()
 
         # Set new value
         model.string_prop = "new_value"
@@ -52,7 +52,7 @@ class TestStateProperty:
         assert model.int_prop.value == 100
 
     def test_set_list_property(self):
-        model = self.TestModel()
+        model = self.MockModel()
 
         # Set new list
         model.list_prop = [4, 5, 6]
@@ -63,7 +63,7 @@ class TestStateProperty:
         assert list(model.list_prop) == []
 
     def test_on_change(self):
-        model = self.TestModel()
+        model = self.MockModel()
         callback = Mock()
 
         # Register callback
@@ -79,11 +79,11 @@ class TestStateProperty:
         callback.assert_called_once_with("changed")
 
     def test_state_property_on_change(self):
-        model = self.TestModel()
+        model = self.MockModel()
         callback = Mock()
 
         # Register callback using StateProperty method
-        self.TestModel.string_prop.on_change(model, callback)
+        self.MockModel.string_prop.on_change(model, callback)
 
         # Change value
         model.string_prop.value = "changed"
@@ -92,11 +92,11 @@ class TestStateProperty:
         callback.assert_called_once_with("changed")
 
     def test_state_property_on_change_none_callback(self):
-        model = self.TestModel()
+        model = self.MockModel()
 
         # Try to register None callback
         with pytest.raises(SwallowStateError) as exc_info:
-            self.TestModel.string_prop.on_change(model, None)
+            self.MockModel.string_prop.on_change(model, None)
 
         assert "Parameter 'callback' must be provided and cannot be None" in str(
             exc_info.value
@@ -109,7 +109,7 @@ class TestStateProperty:
         assert prop.initial == "test"
 
     def test_list_property_append_triggers_callback(self):
-        model = self.TestModel()
+        model = self.MockModel()
         callback = Mock()
         model.list_prop.on_change(callback)
 
@@ -117,7 +117,7 @@ class TestStateProperty:
         callback.assert_called_once_with([1, 2, 3, 4])
 
     def test_list_property_remove_triggers_callback(self):
-        model = self.TestModel()
+        model = self.MockModel()
         callback = Mock()
         model.list_prop.on_change(callback)
 
@@ -125,7 +125,7 @@ class TestStateProperty:
         callback.assert_called_once_with([1, 3])
 
     def test_list_property_insert_triggers_callback(self):
-        model = self.TestModel()
+        model = self.MockModel()
         callback = Mock()
         model.list_prop.on_change(callback)
 

@@ -6,7 +6,9 @@ can notify listeners when they change.
 """
 
 from collections.abc import MutableSequence
-from typing import List
+from typing import List, Any, Union, TypeVar, Generic, Callable
+
+T = TypeVar('T')
 
 
 class Observable:
@@ -46,7 +48,7 @@ class Observable:
         self._notify_callback(self._value)
 
 
-class ObservableValue(Observable):
+class ObservableValue(Observable, Generic[T]):
     """
     Represents an observable value that can notify observers when its value changes.
 
@@ -55,28 +57,195 @@ class ObservableValue(Observable):
     This class behaves like the contained value in terms of equality comparison
     and provides a concise representation of the encapsulated value.
 
+    It implements Python's special methods to allow direct operations with the
+    wrapped value, making it more intuitive to use in expressions.
+
     :ivar _value: The encapsulated value being observed.
     :type _value: Any
     """
 
-    def __init__(self, value, notify_callback=None):
+    def __init__(self, value: T, notify_callback=None):
         super().__init__(value, notify_callback)
 
     @property
-    def value(self):
+    def value(self) -> T:
+        """Get the current value."""
         return self._value
 
     @value.setter
-    def value(self, new_value):
+    def value(self, new_value: T):
+        """Set a new value and notify observers if it changed."""
         if self._value != new_value:
             self._value = new_value
             self._notify()
 
-    # Allow the observable to act like its contained value
+    def get(self) -> T:
+        """Alternative method to get the current value."""
+        return self._value
+
+    # Comparison operators
     def __eq__(self, other):
         if isinstance(other, ObservableValue):
             return self._value == other._value
         return self._value == other
+
+    def __ne__(self, other):
+        if isinstance(other, ObservableValue):
+            return self._value != other._value
+        return self._value != other
+
+    def __lt__(self, other):
+        if isinstance(other, ObservableValue):
+            return self._value < other._value
+        return self._value < other
+
+    def __le__(self, other):
+        if isinstance(other, ObservableValue):
+            return self._value <= other._value
+        return self._value <= other
+
+    def __gt__(self, other):
+        if isinstance(other, ObservableValue):
+            return self._value > other._value
+        return self._value > other
+
+    def __ge__(self, other):
+        if isinstance(other, ObservableValue):
+            return self._value >= other._value
+        return self._value >= other
+
+    # Arithmetic operators
+    def __add__(self, other):
+        if isinstance(other, ObservableValue):
+            return self._value + other._value
+        return self._value + other
+
+    def __sub__(self, other):
+        if isinstance(other, ObservableValue):
+            return self._value - other._value
+        return self._value - other
+
+    def __mul__(self, other):
+        if isinstance(other, ObservableValue):
+            return self._value * other._value
+        return self._value * other
+
+    def __truediv__(self, other):
+        if isinstance(other, ObservableValue):
+            return self._value / other._value
+        return self._value / other
+
+    def __floordiv__(self, other):
+        if isinstance(other, ObservableValue):
+            return self._value // other._value
+        return self._value // other
+
+    def __mod__(self, other):
+        if isinstance(other, ObservableValue):
+            return self._value % other._value
+        return self._value % other
+
+    # Reflected arithmetic operators
+    def __radd__(self, other):
+        return other + self._value
+
+    def __rsub__(self, other):
+        return other - self._value
+
+    def __rmul__(self, other):
+        return other * self._value
+
+    def __rtruediv__(self, other):
+        return other / self._value
+
+    def __rfloordiv__(self, other):
+        return other // self._value
+
+    def __rmod__(self, other):
+        return other % self._value
+
+    # Augmented assignment operators
+    def __iadd__(self, other):
+        if isinstance(other, ObservableValue):
+            self.value = self._value + other._value
+        else:
+            self.value = self._value + other
+        return self
+
+    def __isub__(self, other):
+        if isinstance(other, ObservableValue):
+            self.value = self._value - other._value
+        else:
+            self.value = self._value - other
+        return self
+
+    def __imul__(self, other):
+        if isinstance(other, ObservableValue):
+            self.value = self._value * other._value
+        else:
+            self.value = self._value * other
+        return self
+
+    def __itruediv__(self, other):
+        if isinstance(other, ObservableValue):
+            self.value = self._value / other._value
+        else:
+            self.value = self._value / other
+        return self
+
+    def __ifloordiv__(self, other):
+        if isinstance(other, ObservableValue):
+            self.value = self._value // other._value
+        else:
+            self.value = self._value // other
+        return self
+
+    def __imod__(self, other):
+        if isinstance(other, ObservableValue):
+            self.value = self._value % other._value
+        else:
+            self.value = self._value % other
+        return self
+
+    # Type conversion methods
+    def __int__(self):
+        return int(self._value)
+
+    def __float__(self):
+        return float(self._value)
+
+    def __str__(self):
+        return str(self._value)
+
+    def __bool__(self):
+        return bool(self._value)
+
+    # Index support (for use as a list index)
+    def __index__(self):
+        """Allow ObservableValue to be used as a list index."""
+        try:
+            return int(self._value)
+        except (TypeError, ValueError):
+            raise TypeError(f"Cannot use {type(self._value).__name__} as an index")
+
+    # Container methods (for completeness)
+    def __len__(self):
+        try:
+            return len(self._value)
+        except TypeError:
+            raise TypeError(f"Object of type {type(self._value).__name__} has no len()")
+
+    def __getitem__(self, key):
+        try:
+            return self._value[key]
+        except (TypeError, IndexError, KeyError) as e:
+            raise type(e)(f"Error accessing item: {e}")
+
+    def __contains__(self, item):
+        try:
+            return item in self._value
+        except TypeError:
+            return False
 
     def __repr__(self):
         return f"ObservableValue({repr(self._value)})"

@@ -2,13 +2,17 @@
 Todo Application Example using the Swallow Framework
 """
 
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
 import datetime
 import sys
 import uuid
 from typing import Dict, List, Optional
 
-from src.swallow_framework import Model, Command, Event, EventDispatcher, Context, View
-from src.swallow_framework.state import state
+from swallow_framework import Model, Command, Event, EventDispatcher, Context, View, state
 
 
 class TodoItem:
@@ -33,6 +37,7 @@ class TodoItem:
 class TodoModel(Model):
     """Model for the todo application."""
     items = state([])
+    filter_completed = state(False)
 
     def add_item(self, text: str) -> None:
         if text.strip():
@@ -45,9 +50,16 @@ class TodoModel(Model):
         for item in self.items:
             if item.id == item_id:
                 item.toggle()
-                # Force update of the observable list
                 self.items = list(self.items)
                 break
+
+    def toggle_filter(self) -> None:
+        self.filter_completed = not self.filter_completed
+
+    def get_filtered_items(self) -> List[TodoItem]:
+        if self.filter_completed:
+            return [item for item in self.items if not item.completed]
+        return self.items
 
     def get_stats(self) -> Dict[str, int]:
         total = len(self.items)
@@ -86,6 +98,11 @@ class ToggleTodoCommand(Command):
             self.model.toggle_item(item_id)
 
 
+class ToggleFilterCommand(Command):
+    def execute(self, data: Dict) -> None:
+        self.model.toggle_filter()
+
+
 # ----- Context -----
 
 class TodoContext(Context):
@@ -98,6 +115,7 @@ class TodoContext(Context):
             "ADD_TODO": AddTodoCommand(model),
             "REMOVE_TODO": RemoveTodoCommand(model),
             "TOGGLE_TODO": ToggleTodoCommand(model),
+            "TOGGLE_FILTER": ToggleFilterCommand(model),
         }
 
         for event, command in commands.items():
@@ -113,14 +131,19 @@ class TodoView(View):
 
         # Register for model changes
         self.model.on_change('items', self.render)
+        self.model.on_change('filter_completed', self.render)
 
     def render(self, *args) -> None:
         """Render the current state of the todo list."""
         print("\033c", end="")  # Clear console
         print("\n===== SWALLOW TODO APP =====\n")
 
+        # Print filter status
+        filter_status = "Active items only" if self.model.filter_completed else "All items"
+        print(f"Showing: {filter_status}")
+
         # Print items
-        items = self.model.items
+        items = self.model.get_filtered_items()
         if items:
             for i, item in enumerate(items):
                 print(f"{i + 1}. {item}")
@@ -130,13 +153,14 @@ class TodoView(View):
         # Print stats
         stats = self.model.get_stats()
         print(f"\nTotal: {stats['total']} | Active: {stats['active']} | Completed: {stats['completed']}")
-        print("\nTIP: You can use one-letter shortcuts (a, t, r, q) for commands")
+        print("\nTIP: You can use one-letter shortcuts (a, t, r, f, q) for commands")
 
         # Print commands
         print("\nCommands:")
         print("  add, a <text>       - Add a new todo item")
         print("  toggle, t <number>  - Toggle completion status")
         print("  remove, r <number>  - Remove a todo item")
+        print("  filter, f           - Toggle filter (all/active only)")
         print("  exit, e, q          - Exit the application")
         print("\n> ", end="")
         sys.stdout.flush()
@@ -160,6 +184,7 @@ class TodoView(View):
             ("add", "a"): self._handle_add,
             ("toggle", "t"): self._handle_toggle,
             ("remove", "r"): self._handle_remove,
+            ("filter", "f"): self._handle_filter,
             ("help", "h"): self._handle_help
         }
 
@@ -179,7 +204,7 @@ class TodoView(View):
     def _handle_toggle(self, number) -> bool:
         try:
             index = int(number) - 1
-            items = self.model.items
+            items = self.model.get_filtered_items()
             if 0 <= index < len(items):
                 self.dispatch(Event("TOGGLE_TODO", {"id": items[index].id}))
             else:
@@ -191,7 +216,7 @@ class TodoView(View):
     def _handle_remove(self, number) -> bool:
         try:
             index = int(number) - 1
-            items = self.model.items
+            items = self.model.get_filtered_items()
             if 0 <= index < len(items):
                 self.dispatch(Event("REMOVE_TODO", {"id": items[index].id}))
             else:
@@ -200,11 +225,16 @@ class TodoView(View):
             print("\nPlease enter a valid number.")
         return True
 
+    def _handle_filter(self, _) -> bool:
+        self.dispatch(Event("TOGGLE_FILTER"))
+        return True
+
     def _handle_help(self, _) -> bool:
         print("\nAvailable commands:")
         print("  a, add <text>          - Add a new todo item")
         print("  t, toggle <number>     - Toggle completion status")
         print("  r, remove <number>     - Remove a todo item")
+        print("  f, filter              - Toggle filter (all/active only)")
         print("  e, q, exit             - Exit the application")
         print("  h, help                - Show this help message")
         input("\nPress Enter to continue...")

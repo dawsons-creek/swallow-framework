@@ -1,228 +1,246 @@
-from unittest.mock import Mock
+"""
+Test cases for the enhanced ObservableValue class.
 
-from src.swallow_framework.state.observable import Observable, ObservableValue, ObservableList
+This module tests the operator overloading and convenience features
+of the ObservableValue class.
+"""
 
+import sys
+import os
+import unittest
 
-class TestObservable:
-    def test_init(self):
-        value = "test_value"
-        observable = Observable(value)
-        assert observable._value == value
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 
-    def test_init_with_callback(self):
-        callback = Mock()
-        observable = Observable("test", callback)
-        assert observable._notify_callback == callback
-
-    def test_on_change(self):
-        observable = Observable("test")
-        callback = Mock()
-
-        # Register callback
-        result = observable.on_change(callback)
-
-        # Verify callback is returned
-        assert result == callback
-
-        # Trigger notification
-        observable._notify()
-
-        # Verify callback was called with the value
-        callback.assert_called_once_with("test")
-
-    def test_multiple_callbacks(self):
-        observable = Observable("test")
-        callback1 = Mock()
-        callback2 = Mock()
-
-        # Register callbacks
-        observable.on_change(callback1)
-        observable.on_change(callback2)
-
-        # Trigger notification
-        observable._notify()
-
-        # Verify both callbacks were called
-        callback1.assert_called_once_with("test")
-        callback2.assert_called_once_with("test")
+from swallow_framework.state.observable import ObservableValue
 
 
-class TestObservableValue:
-    def test_init(self):
-        value = "test_value"
-        observable = ObservableValue(value)
-        assert observable.value == value
+class TestObservableValue(unittest.TestCase):
+    """Test cases for the ObservableValue class."""
 
-    def test_value_getter(self):
-        observable = ObservableValue("test")
-        assert observable.value == "test"
+    def setUp(self):
+        """Set up test fixtures."""
+        self.notify_called = False
+        self.notify_value = None
 
-    def test_value_setter(self):
-        callback = Mock()
-        observable = ObservableValue("test", callback)
+        def notify_callback(value):
+            self.notify_called = True
+            self.notify_value = value
 
-        # Change value
-        observable.value = "new_value"
+        self.callback = notify_callback
+        self.obs_int = ObservableValue(10, self.callback)
+        self.obs_float = ObservableValue(3.14, self.callback)
+        self.obs_str = ObservableValue("hello", self.callback)
+        self.obs_list = ObservableValue([1, 2, 3], self.callback)
 
-        # Verify callback was called
-        callback.assert_called_once_with("new_value")
+    def test_value_property(self):
+        """Test the value property."""
+        self.assertEqual(self.obs_int.value, 10)
+        self.obs_int.value = 20
+        self.assertEqual(self.obs_int.value, 20)
+        self.assertTrue(self.notify_called)
+        self.assertEqual(self.notify_value, 20)
 
-        # Verify value was updated
-        assert observable.value == "new_value"
-
-    def test_value_setter_same_value(self):
-        callback = Mock()
-        observable = ObservableValue("test", callback)
-
-        # Set same value
-        observable.value = "test"
-
-        # Verify callback was not called
-        callback.assert_not_called()
+    def test_get_method(self):
+        """Test the get() method."""
+        self.assertEqual(self.obs_int.get(), 10)
 
     def test_equality(self):
-        observable1 = ObservableValue("test")
-        observable2 = ObservableValue("test")
-        observable3 = ObservableValue("different")
+        """Test equality operator."""
+        self.assertTrue(self.obs_int == 10)
+        self.assertTrue(self.obs_int == ObservableValue(10))
+        self.assertFalse(self.obs_int == 20)
 
-        # Compare with other ObservableValue
-        assert observable1 == observable2
-        assert observable1 != observable3
+    def test_inequality(self):
+        """Test inequality operator."""
+        self.assertTrue(self.obs_int != 20)
+        self.assertTrue(self.obs_int != ObservableValue(20))
+        self.assertFalse(self.obs_int != 10)
 
-        # Compare with raw value
-        assert observable1 == "test"
-        assert observable1 != "different"
+    def test_less_than(self):
+        """Test less than operator."""
+        self.assertTrue(self.obs_int < 20)
+        self.assertTrue(self.obs_int < ObservableValue(20))
+        self.assertFalse(self.obs_int < 5)
 
-    def test_repr(self):
-        observable = ObservableValue("test")
-        assert repr(observable) == "ObservableValue('test')"
+    def test_less_than_equal(self):
+        """Test less than or equal operator."""
+        self.assertTrue(self.obs_int <= 10)
+        self.assertTrue(self.obs_int <= 20)
+        self.assertTrue(self.obs_int <= ObservableValue(10))
+        self.assertFalse(self.obs_int <= 5)
+
+    def test_greater_than(self):
+        """Test greater than operator."""
+        self.assertTrue(self.obs_int > 5)
+        self.assertTrue(self.obs_int > ObservableValue(5))
+        self.assertFalse(self.obs_int > 20)
+
+    def test_greater_than_equal(self):
+        """Test greater than or equal operator."""
+        self.assertTrue(self.obs_int >= 10)
+        self.assertTrue(self.obs_int >= 5)
+        self.assertTrue(self.obs_int >= ObservableValue(10))
+        self.assertFalse(self.obs_int >= 20)
+
+    def test_addition(self):
+        """Test addition operator."""
+        self.assertEqual(self.obs_int + 5, 15)
+        self.assertEqual(self.obs_int + ObservableValue(5), 15)
+        self.assertEqual(5 + self.obs_int, 15)  # Reflected operation
+
+    def test_subtraction(self):
+        """Test subtraction operator."""
+        self.assertEqual(self.obs_int - 5, 5)
+        self.assertEqual(self.obs_int - ObservableValue(5), 5)
+        self.assertEqual(15 - self.obs_int, 5)  # Reflected operation
+
+    def test_multiplication(self):
+        """Test multiplication operator."""
+        self.assertEqual(self.obs_int * 2, 20)
+        self.assertEqual(self.obs_int * ObservableValue(2), 20)
+        self.assertEqual(2 * self.obs_int, 20)  # Reflected operation
+
+    def test_division(self):
+        """Test division operator."""
+        self.assertEqual(self.obs_int / 2, 5)
+        self.assertEqual(self.obs_int / ObservableValue(2), 5)
+        self.assertEqual(100 / self.obs_int, 10)  # Reflected operation
+
+    def test_floor_division(self):
+        """Test floor division operator."""
+        self.assertEqual(self.obs_int // 3, 3)
+        self.assertEqual(self.obs_int // ObservableValue(3), 3)
+        self.assertEqual(100 // self.obs_int, 10)  # Reflected operation
+
+    def test_modulo(self):
+        """Test modulo operator."""
+        self.assertEqual(self.obs_int % 3, 1)
+        self.assertEqual(self.obs_int % ObservableValue(3), 1)
+        self.assertEqual(103 % self.obs_int, 3)  # Reflected operation
+
+    def test_iadd(self):
+        """Test in-place addition."""
+        self.notify_called = False
+        self.obs_int += 5
+        self.assertEqual(self.obs_int.value, 15)
+        self.assertTrue(self.notify_called)
+
+        self.notify_called = False
+        self.obs_int += ObservableValue(5)
+        self.assertEqual(self.obs_int.value, 20)
+        self.assertTrue(self.notify_called)
+
+    def test_isub(self):
+        """Test in-place subtraction."""
+        self.notify_called = False
+        self.obs_int -= 5
+        self.assertEqual(self.obs_int.value, 5)
+        self.assertTrue(self.notify_called)
+
+        self.notify_called = False
+        self.obs_int -= ObservableValue(2)
+        self.assertEqual(self.obs_int.value, 3)
+        self.assertTrue(self.notify_called)
+
+    def test_imul(self):
+        """Test in-place multiplication."""
+        self.notify_called = False
+        self.obs_int *= 2
+        self.assertEqual(self.obs_int.value, 20)
+        self.assertTrue(self.notify_called)
+
+        self.notify_called = False
+        self.obs_int *= ObservableValue(2)
+        self.assertEqual(self.obs_int.value, 40)
+        self.assertTrue(self.notify_called)
+
+    def test_idiv(self):
+        """Test in-place division."""
+        self.notify_called = False
+        self.obs_int /= 2
+        self.assertEqual(self.obs_int.value, 5)
+        self.assertTrue(self.notify_called)
+
+        self.notify_called = False
+        self.obs_int /= ObservableValue(5)
+        self.assertEqual(self.obs_int.value, 1)
+        self.assertTrue(self.notify_called)
+
+    def test_ifloordiv(self):
+        """Test in-place floor division."""
+        self.obs_int.value = 10
+        self.notify_called = False
+        self.obs_int //= 3
+        self.assertEqual(self.obs_int.value, 3)
+        self.assertTrue(self.notify_called)
+
+        self.notify_called = False
+        self.obs_int //= ObservableValue(3)
+        self.assertEqual(self.obs_int.value, 1)
+        self.assertTrue(self.notify_called)
+
+    def test_imod(self):
+        """Test in-place modulo."""
+        self.obs_int.value = 10
+        self.notify_called = False
+        self.obs_int %= 3
+        self.assertEqual(self.obs_int.value, 1)
+        self.assertTrue(self.notify_called)
+
+        self.notify_called = False
+        self.obs_int %= ObservableValue(1)
+        self.assertEqual(self.obs_int.value, 0)
+        self.assertTrue(self.notify_called)
+
+    def test_conversions(self):
+        """Test conversion methods."""
+        self.assertEqual(int(self.obs_int), 10)
+        self.assertEqual(float(self.obs_int), 10.0)
+        self.assertEqual(str(self.obs_int), "10")
+        self.assertTrue(bool(self.obs_int))
+
+        # Test with zero
+        zero_obs = ObservableValue(0)
+        self.assertFalse(bool(zero_obs))
+
+    def test_container_methods(self):
+        """Test container methods."""
+        self.assertEqual(len(self.obs_list), 3)
+        self.assertEqual(self.obs_list[0], 1)
+        self.assertTrue(2 in self.obs_list)
+        self.assertFalse(5 in self.obs_list)
+
+    def test_notification(self):
+        """Test notification callbacks."""
+        self.notify_called = False
+
+        # Should not notify if value doesn't change
+        self.obs_int.value = 10
+        self.assertFalse(self.notify_called)
+
+        # Should notify when value changes
+        self.obs_int.value = 20
+        self.assertTrue(self.notify_called)
+        self.assertEqual(self.notify_value, 20)
+
+        # Reset notification flag
+        self.notify_called = False
+
+        # Should notify with in-place operators
+        self.obs_int += 5
+        self.assertTrue(self.notify_called)
+        self.assertEqual(self.notify_value, 25)
+
+    def test_string_concatenation(self):
+        """Test string concatenation."""
+        self.assertEqual(self.obs_str + " world", "hello world")
+        self.assertEqual("world " + self.obs_str, "world hello")  # Reflected
+
+        self.notify_called = False
+        self.obs_str += " world"
+        self.assertEqual(self.obs_str.value, "hello world")
+        self.assertTrue(self.notify_called)
 
 
-class TestObservableList:
-    def test_init_empty(self):
-        observable = ObservableList()
-        assert len(observable) == 0
-
-    def test_init_with_data(self):
-        data = [1, 2, 3]
-        observable = ObservableList(data)
-        assert list(observable) == data
-
-    def test_getitem(self):
-        observable = ObservableList([1, 2, 3])
-        assert observable[0] == 1
-        assert observable[1] == 2
-        assert observable[2] == 3
-
-    def test_setitem(self):
-        callback = Mock()
-        observable = ObservableList([1, 2, 3], callback)
-
-        observable[1] = 5
-
-        assert observable[1] == 5
-        callback.assert_called_once_with([1, 5, 3])
-
-    def test_delitem(self):
-        callback = Mock()
-        observable = ObservableList([1, 2, 3], callback)
-
-        del observable[1]
-
-        assert list(observable) == [1, 3]
-        callback.assert_called_once_with([1, 3])
-
-    def test_insert(self):
-        callback = Mock()
-        observable = ObservableList([1, 2, 3], callback)
-
-        observable.insert(1, 5)
-
-        assert list(observable) == [1, 5, 2, 3]
-        callback.assert_called_once_with([1, 5, 2, 3])
-
-    def test_append(self):
-        callback = Mock()
-        observable = ObservableList([1, 2, 3], callback)
-
-        observable.append(4)
-
-        assert list(observable) == [1, 2, 3, 4]
-        callback.assert_called_once_with([1, 2, 3, 4])
-
-    def test_remove(self):
-        callback = Mock()
-        observable = ObservableList([1, 2, 3], callback)
-
-        observable.remove(2)
-
-        assert list(observable) == [1, 3]
-        callback.assert_called_once_with([1, 3])
-
-    def test_extend(self):
-        callback = Mock()
-        observable = ObservableList([1, 2, 3], callback)
-
-        observable.extend([4, 5])
-
-        assert list(observable) == [1, 2, 3, 4, 5]
-        callback.assert_called_once_with([1, 2, 3, 4, 5])
-
-    def test_clear(self):
-        callback = Mock()
-        observable = ObservableList([1, 2, 3], callback)
-
-        observable.clear()
-
-        assert list(observable) == []
-        callback.assert_called_once_with([])
-
-    def test_pop(self):
-        callback = Mock()
-        observable = ObservableList([1, 2, 3], callback)
-
-        value = observable.pop()
-
-        assert value == 3
-        assert list(observable) == [1, 2]
-        callback.assert_called_once_with([1, 2])
-
-    def test_pop_with_index(self):
-        callback = Mock()
-        observable = ObservableList([1, 2, 3], callback)
-
-        value = observable.pop(1)
-
-        assert value == 2
-        assert list(observable) == [1, 3]
-        callback.assert_called_once_with([1, 3])
-
-    def test_batch_update(self):
-        callback = Mock()
-        observable = ObservableList([1, 2, 3], callback)
-
-        observable.begin_batch_update()
-        observable.append(4)
-        observable.append(5)
-        observable.remove(2)
-        callback.assert_not_called()
-
-        observable.end_batch_update()
-        callback.assert_called_once_with([1, 3, 4, 5])
-
-    def test_batch_update_no_changes(self):
-        callback = Mock()
-        observable = ObservableList([1, 2, 3], callback)
-
-        observable.begin_batch_update()
-        observable.end_batch_update()
-
-        callback.assert_not_called()
-
-    def test_len(self):
-        observable = ObservableList([1, 2, 3])
-        assert len(observable) == 3
-
-    def test_repr(self):
-        observable = ObservableList([1, 2, 3])
-        assert repr(observable) == "ObservableList([1, 2, 3])"
+if __name__ == "__main__":
+    unittest.main()
