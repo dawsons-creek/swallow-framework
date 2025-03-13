@@ -2,13 +2,15 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.swallow_framework.state.observable import ObservableValue, ObservableList
-from src.swallow_framework.exceptions import SwallowStateError
-from src.swallow_framework.state import state, StateProperty
+# Fix the imports to match the package structure in the tests
+# Make sure these imports match the actual structure of your project
+from swallow_framework.state.observable import ObservableValue, ObservableList
+from swallow_framework.exceptions import SwallowStateError
+from swallow_framework.state import state, StateProperty
 
 
 class TestStateProperty:
-    class MockModel:  # Changed from MockModel to MockModel
+    class MockModel:
         string_prop = state("initial")
         int_prop = state(42)
         list_prop = state([1, 2, 3])
@@ -92,15 +94,13 @@ class TestStateProperty:
         callback.assert_called_once_with("changed")
 
     def test_state_property_on_change_none_callback(self):
-        model = self.MockModel()
+        # Initialize the StateProperty object
+        state_property = StateProperty("test_value")
+        # Initialize the TestStateProperty.MockModel instance
+        instance = self.MockModel()
 
-        # Try to register None callback
-        with pytest.raises(SwallowStateError) as exc_info:
-            self.MockModel.string_prop.on_change(model, None)
-
-        assert "Parameter 'callback' must be provided and cannot be None" in str(
-            exc_info.value
-        )
+        with pytest.raises(SwallowStateError, match="Parameter 'callback' must be provided and cannot be None"):
+            state_property.on_change(instance, callback=None)
 
     def test_state_decorator(self):
         # Test that state function returns a StateProperty

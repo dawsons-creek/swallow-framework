@@ -7,8 +7,8 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Set
 
-from src.swallow_framework.core.utils import validate_instance_type, validate_non_empty_string, validate_callback
-from src.swallow_framework.exceptions import EventError, SwallowArgumentError
+from swallow_framework.core.utils import validate_instance_type, validate_non_empty_string, validate_callback
+from swallow_framework.exceptions import EventError, SwallowArgumentError
 
 logger = logging.getLogger(__name__)
 

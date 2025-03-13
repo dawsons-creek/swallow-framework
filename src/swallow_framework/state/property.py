@@ -4,8 +4,8 @@ Property descriptors for reactive state management.
 This module provides descriptor classes that enable reactive properties
 in model classes, allowing automatic tracking and notification of state changes.
 """
-from src.swallow_framework.exceptions import SwallowStateError
-from src.swallow_framework.state.observable import ObservableList, ObservableValue
+from swallow_framework.exceptions import SwallowStateError
+from swallow_framework.state.observable import ObservableList, ObservableValue
 
 
 class StateProperty:

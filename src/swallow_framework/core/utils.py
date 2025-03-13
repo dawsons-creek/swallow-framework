@@ -1,7 +1,7 @@
 """
 Utility functions for the Swallow Framework.
 """
-from src.swallow_framework.exceptions import SwallowArgumentError
+from swallow_framework.exceptions import SwallowArgumentError
 
 
 def validate_instance_type(param_name: str, value, expected_type: type) -> None:

@@ -1,9 +1,9 @@
 import pytest
 from abc import ABC
 
-from src.swallow_framework.mvcc.command import Command
-from src.swallow_framework.mvcc.model import Model
-from src.swallow_framework.exceptions import SwallowArgumentError
+from swallow_framework.mvcc.command import Command
+from swallow_framework.mvcc.model import Model
+from swallow_framework.exceptions import SwallowArgumentError
 
 
 class MockModel(Model):

@@ -8,8 +8,8 @@ that can be performed on models.
 from abc import ABC, abstractmethod
 from typing import Any
 
-from src.swallow_framework.core.utils import validate_instance_type
-from src.swallow_framework.mvcc.model import Model
+from swallow_framework.core.utils import validate_instance_type
+from swallow_framework.mvcc.model import Model
 
 
 class Command(ABC):
