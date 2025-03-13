@@ -58,3 +58,4 @@ addopts = "--strict-markers"
 
 [tool.hatch.build.targets.wheel]
 packages = ["swallow_framework"]
+source-directories = ["src"]
