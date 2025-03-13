@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import Mock, patch
 
-from src.swallow_framework.core.events import Event, EventDispatcher
-from src.swallow_framework.exceptions import SwallowArgumentError
-from src.swallow_framework.mvcc.context import Context
-from src.swallow_framework.mvcc.view import View
+from swallow_framework.core.events import Event, EventDispatcher
+from swallow_framework.exceptions import SwallowArgumentError
+from swallow_framework.mvcc.context import Context
+from swallow_framework.mvcc.view import View
 
 
 class MockContext(Context):

@@ -1,11 +1,11 @@
 import pytest
-from src.swallow_framework.core.events import Event
-from src.swallow_framework.core.utils import (
+from swallow_framework.core.events import Event
+from swallow_framework.core.utils import (
     validate_instance_type,
     validate_non_empty_string,
     validate_callback,
 )
-from src.swallow_framework.exceptions import SwallowArgumentError
+from swallow_framework.exceptions import SwallowArgumentError
 
 
 class TestUtils:

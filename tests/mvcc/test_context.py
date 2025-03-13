@@ -1,11 +1,11 @@
 import unittest
 from unittest.mock import patch
 
-from src.swallow_framework.core.events import Event, EventDispatcher
-from src.swallow_framework.exceptions import SwallowArgumentError
-from src.swallow_framework.mvcc.command import Command
-from src.swallow_framework.mvcc.context import Context
-from src.swallow_framework.mvcc.model import Model
+from swallow_framework.core.events import Event, EventDispatcher
+from swallow_framework.exceptions import SwallowArgumentError
+from swallow_framework.mvcc.command import Command
+from swallow_framework.mvcc.context import Context
+from swallow_framework.mvcc.model import Model
 
 
 class MockCommand(Command):

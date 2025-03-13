@@ -7,9 +7,9 @@ and managing event dispatching in applications.
 
 from abc import ABC
 
-from src.swallow_framework.core.events import EventDispatcher, Event
-from src.swallow_framework.core.utils import validate_instance_type
-from src.swallow_framework.mvcc.command import Command
+from swallow_framework.core.events import EventDispatcher, Event
+from swallow_framework.core.utils import validate_instance_type
+from swallow_framework.mvcc.command import Command
 
 
 class Context(ABC):

@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import Mock, patch, call
 
-from src.swallow_framework.exceptions import SwallowStateError
-from src.swallow_framework.mvcc.model import Model
-from src.swallow_framework.state.property import state, StateProperty
+from swallow_framework.exceptions import SwallowStateError
+from swallow_framework.mvcc.model import Model
+from swallow_framework.state.property import state, StateProperty
 
 
 class MockModel(Model):

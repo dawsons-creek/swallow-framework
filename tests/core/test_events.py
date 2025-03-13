@@ -1,6 +1,6 @@
 import pytest
-from src.swallow_framework.core.events import Event, EventDispatcher
-from src.swallow_framework.exceptions import SwallowArgumentError
+from swallow_framework.core.events import Event, EventDispatcher
+from swallow_framework.exceptions import SwallowArgumentError
 
 
 class TestEvent:

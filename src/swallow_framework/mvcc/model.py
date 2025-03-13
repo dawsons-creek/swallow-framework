@@ -4,8 +4,8 @@ Model component for the Swallow Framework MVC pattern.
 This module provides the base Model class for managing state properties
 and change notifications in applications.
 """
-from src.swallow_framework.exceptions import SwallowStateError
-from src.swallow_framework.state.property import StateProperty
+from swallow_framework.exceptions import SwallowStateError
+from swallow_framework.state.property import StateProperty
 
 
 class Model:
