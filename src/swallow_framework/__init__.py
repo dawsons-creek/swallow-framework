@@ -5,7 +5,7 @@ Swallow Framework
 A lightweight Python framework designed for reactive state management and event-driven architecture.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 from swallow_framework.core.events import Event, EventDispatcher
 from swallow_framework.mvcc.model import Model
