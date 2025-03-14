@@ -18,7 +18,7 @@ from swallow_framework.exceptions import (
 from swallow_framework.mvcc import Model, View, Command, Context
 from swallow_framework.state import Observable, ObservableValue, ObservableList, StateProperty, state
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 __all__ = [
     # Core

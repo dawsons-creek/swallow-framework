@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "swallow-framework"
-version = "1.0.1"
+version = "1.0.2"
 description = "A lightweight Python framework"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -33,7 +33,7 @@ dev = [
     "pytest-cov>=4.0.0",
     "black>=23.0.0",
     "isort>=5.10.0",
-    "mypy>=1.0.1",
+    "mypy>=1.0.2",
 ]
 
 [tool.black]
