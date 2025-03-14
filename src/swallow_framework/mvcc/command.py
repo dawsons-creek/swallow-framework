@@ -1,4 +1,5 @@
 """
+src/swallow_framework/mvcc/command.py
 Command component for the Swallow Framework MVC pattern.
 
 This module provides the base Command class for encapsulating actions

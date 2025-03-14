@@ -57,5 +57,5 @@ python_files = "test_*.py"
 addopts = "--strict-markers"
 
 [tool.hatch.build.targets.wheel]
-packages = ["swallow_framework"]
-source-directories = ["src"]
+only-include = ["src"]
+sources = ["src"]

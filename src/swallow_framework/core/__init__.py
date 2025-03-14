@@ -1,4 +1,5 @@
 """
+src/swallow_framework/core/__init__.py
 Core components of the Swallow Framework.
 
 This package contains the fundamental components of the framework,

@@ -1,4 +1,5 @@
 """
+src/swallow_framework/mvcc/__init__.py
 MVC (Model-View-Command) components for the Swallow Framework.
 
 This package provides base classes for implementing the MVC pattern

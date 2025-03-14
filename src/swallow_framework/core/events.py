@@ -1,4 +1,5 @@
 """
+src/swallow_framework/core/events.py
 Event handling system for the Swallow Framework.
 """
 

@@ -1,4 +1,5 @@
 """
+src/swallow_framework/exceptions.py
 Custom exceptions for the Swallow Framework.
 """
 
