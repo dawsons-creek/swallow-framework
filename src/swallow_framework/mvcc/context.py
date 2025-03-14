@@ -1,4 +1,5 @@
 """
+src/swallow_framework/mvcc/context.py
 Context component for the Swallow Framework MVC pattern.
 
 This module provides the base Context class for mapping commands to events

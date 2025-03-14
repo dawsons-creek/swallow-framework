@@ -1,4 +1,5 @@
 """
+src/swallow_framework/mvcc/view.py
 View component for the Swallow Framework MVC pattern.
 
 This module provides the base View class for handling user interactions

@@ -1,4 +1,5 @@
 """
+src/swallow_framework/mvcc/model.py
 Model component for the Swallow Framework MVC pattern.
 
 This module provides the base Model class for managing state properties
