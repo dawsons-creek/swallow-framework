@@ -22,13 +22,13 @@ ensuring clean separation of concerns, observability, and reactive state managem
 ## Installation
 
 ```bash
-pip install git+https://github.com/rocket-tycoon/swallow-framework.git@v1.0.2
+pip install git+https://github.com/dawsons-creek/swallow-framework.git@v1.0.2
 ```
 
 You can also clone the repository and install it locally:
 
 ```bash
-git clone https://github.com/rocket-tycoon/swallow-framework.git
+git clone https://github.com/dawsons-creek/swallow-framework.git
 cd swallow-framework
 pip install -e .
 ```
