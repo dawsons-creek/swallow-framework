@@ -24,8 +24,8 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/rocket-tycoon/swallow-framework"
-"Bug Tracker" = "https://github.com/rocket-tycoon/swallow-framework/issues"
+"Homepage" = "https://github.com/dawsons-creek/swallow-framework"
+"Bug Tracker" = "https://github.com/dawsons-creek/swallow-framework/issues"
 
 [project.optional-dependencies]
 dev = [
